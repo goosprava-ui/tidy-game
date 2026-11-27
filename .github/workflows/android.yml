@@ -17,9 +17,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
       - name: Build debug APK with Capacitor
         run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           mkdir app && cd app
           npm init -y > /dev/null
           npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
