@@ -1,0 +1,17 @@
+{
+  "name": "정리의 맛",
+  "short_name": "정리의 맛",
+  "description": "어질러진 물건을 제자리에 쏙 — 잔잔한 정리 퍼즐",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#fde6e3",
+  "theme_color": "#fde6e3",
+  "lang": "ko",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
