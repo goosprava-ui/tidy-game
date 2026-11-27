@@ -225,6 +225,31 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .mode{flex:none;font-size:13px;color:var(--ink2);white-space:nowrap}
 @media(min-width:1500px){header{flex-direction:row;align-items:center;gap:16px}.top{flex:1}h1{font-size:34px}.hud{flex:none}}
 @media(prefers-reduced-motion:reduce){.box.shake{animation:none}.item.pop .spr,.card,.slot.hot{animation:none}.star,.ring{display:none}}
+.roomB{display:block;margin:0 auto 14px;font:700 30px/1 var(--fd);padding:12px 22px;border-radius:18px;border:2px solid #fff;background:linear-gradient(135deg,#ffe0e6,#e6dcfb);color:var(--ink);cursor:pointer;box-shadow:0 6px 16px #b9a5e640}
+.roomB small{font:400 15px var(--fb);color:var(--ink2);margin-left:4px}
+.myroom{position:absolute;inset:0;z-index:3200;display:none;flex-direction:column;background:linear-gradient(160deg,#fde6e3,#efe6fb 55%,#dcf3ee)}
+.myroom.on{display:flex}
+.mrTop{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.mrTop b{font:700 38px/1 var(--fd);color:var(--head)}.mrTop .tro{flex:1;color:var(--ink2);font-size:15px}
+.mrView{position:relative;flex:1;min-height:0;overflow:hidden}
+#mrStage{position:absolute;left:0;top:0;width:900px;height:640px;transform-origin:0 0;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px #b9a5e640;touch-action:none}
+.mri{position:absolute;cursor:grab;touch-action:none;filter:drop-shadow(0 4px 4px #6b4a8a22);transition:filter .2s}
+.mri.sel{filter:drop-shadow(0 0 0 #fff) drop-shadow(0 0 6px #ee8f8c)}
+.mri.drag{cursor:grabbing;filter:drop-shadow(0 12px 10px #6b4a8a33)}
+.mri.pop{animation:mrpop .45s}
+@keyframes mrpop{0%{scale:.4;opacity:0}60%{scale:1.12}100%{scale:1;opacity:1}}
+.mrMom{position:absolute;left:12px;top:10px;display:flex;gap:8px;align-items:flex-start;pointer-events:none;opacity:0;transform:translateY(-8px);transition:.35s}
+.mrMom.on{opacity:1;transform:none}.mrMom .pf{width:54px;height:54px;border-radius:50%;overflow:hidden;flex:none;box-shadow:0 3px 10px #0002}
+.mrMom .bub{background:#fff;border-radius:16px;padding:8px 12px;font:400 15px/1.35 var(--fb);color:var(--ink);max-width:260px;box-shadow:0 4px 12px #b9a5e633}
+.mrTools{position:absolute;left:50%;bottom:10px;translate:-50% 0;display:none;gap:6px;background:#ffffffe6;padding:6px;border-radius:16px;box-shadow:0 4px 14px #b9a5e640}
+.mrTools.on{display:flex}.mrTools button{font:400 21px/1 var(--fd);border:0;border-radius:12px;padding:8px 11px;background:#f1e8f6;color:var(--ink);cursor:pointer;white-space:nowrap}
+.mrTools button[data-a=del]{background:#ffe3e2}
+.mrShelf{display:flex;gap:8px;overflow-x:auto;padding:10px 12px 14px;scrollbar-width:thin}
+.mrc{flex:none;width:92px;display:grid;justify-items:center;gap:2px;padding:8px 4px 6px;border-radius:16px;border:2px solid var(--line);background:#ffffffd9;color:var(--ink);cursor:pointer;font:inherit}
+.mrc .th{width:60px;height:52px;display:grid;place-items:center}.mrc .th svg{max-width:60px;max-height:52px;width:auto;height:auto}
+.mrc .nm{font:400 12px/1.2 var(--fb);text-align:center}.mrc .cs{font:400 11px var(--fb);color:var(--acc)}
+.mrc.on{border-color:#a9d8c8}.mrc.on .cs{color:#5aa88f}
+.mrc.lock{opacity:.5;cursor:default}.mrc.lock .th{filter:grayscale(1) brightness(1.2) opacity(.5)}.mrc.lock .cs{color:var(--ink2)}
 </style>
 </head>
 <body>
@@ -254,7 +279,11 @@ button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
   <div id="stage"></div>
   <div class="npc" id="npc"><div class="pf" id="npcPf"></div><div class="bub" id="npcT"></div></div>
   <div class="ov" id="ov"><div class="card"><div class="who" id="ovWho"></div><h2 id="ovT">정리 완료!</h2><div class="trw" id="ovTro"></div><p id="ovP"></p><div class="btns"><button id="ovH" class="sec">레벨 선택</button><button id="ovB">다음 정리</button></div></div></div>
-  <div class="home" id="home"><div class="hin"><h2>어디부터 치워볼까?</h2><div class="me" id="meSeg" role="group" aria-label="내 캐릭터"></div><div class="seg" id="modeSeg" role="group" aria-label="난이도"><button data-m="easy" aria-pressed="true">쉬운 모드<small>제자리 꼼지락 · 시간 넉넉</small></button><button data-m="hard" aria-pressed="false">어려운 모드<small>퉁퉁 튕김 · 시간 빠듯</small></button></div><p id="homeSub"></p><div class="rooms" id="homeGrid"></div><button class="tool lite" id="resetB">기록 지우기</button></div></div>
+  <div class="myroom" id="myroom"><div class="mrTop"><b>내 방</b><span class="num tro" id="mrInfo"></span><button class="tool" id="mrClose">정리하러 가기</button></div>
+    <div class="mrView" id="mrView"><div id="mrStage"></div><div class="mrMom" id="mrMom"><div class="pf" id="mrMomPf"></div><div class="bub" id="mrBub"></div></div>
+    <div class="mrTools" id="mrTools"><button data-a="flip">↔ 뒤집기</button><button data-a="front">앞으로</button><button data-a="back">뒤로</button><button data-a="del">넣어두기</button></div></div>
+    <div class="mrShelf" id="mrShelf"></div></div>
+  <div class="home" id="home"><div class="hin"><h2>어디부터 치워볼까?</h2><div class="me" id="meSeg" role="group" aria-label="내 캐릭터"></div><div class="seg" id="modeSeg" role="group" aria-label="난이도"><button data-m="easy" aria-pressed="true">쉬운 모드<small>제자리 꼼지락 · 시간 넉넉</small></button><button data-m="hard" aria-pressed="false">어려운 모드<small>퉁퉁 튕김 · 시간 빠듯</small></button></div><p id="homeSub"></p><button class="roomB" id="roomB">🏠 내 방 꾸미기</button><div class="rooms" id="homeGrid"></div><button class="tool lite" id="resetB">기록 지우기</button></div></div>
 </div>
 </div>
 <script>
@@ -582,7 +611,7 @@ function renderHome(){
       const badge=b?`<span class="sr">${starRow(starsOf(b))}</span>`:(open?'<span class="new">도전</span>':'<span class="lock">잠김</span>');
       return`<button class="stg${open?'':' locked'}${i===L?' cur':''}" data-i="${i}" ${open?'':'disabled'}><b>${s+1}단계</b><span class="sub">${LV[i].n}개 · ${MECH_LABEL[LV[i].mech]}</span><span class="bd">${badge}</span></button>`}).join('');
     return`<div class="room${r.only?' mine':''}"><div class="rn">${r.name}${r.only?'<span class="tag">전용</span>':''}${r.pack?'<span class="tag new2">NEW</span>':''}</div><div class="stgs">${st}</div></div>`}).join('');
-  const vis=LV.filter(l=>!l.only||l.only===who).length;$('homeSub').textContent=`${MODES[mode].label} · 별 ${starTotal()} / ${vis*3}`;
+  updRoomBtn();const vis=LV.filter(l=>!l.only||l.only===who).length;$('homeSub').textContent=`${MODES[mode].label} · 별 ${starTotal()} / ${vis*3}`;
 }
 $('modeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mode=b.dataset.m;save.mode=mode;persist();showTro();renderHome()});
 const openHome=()=>{renderHome();$('home').classList.add('on');$('ov').classList.remove('on')};
@@ -762,14 +791,14 @@ function finish(){
   const stars=1+(mist===0?1:0)+(late?0:1);
   setTimeout(()=>{say(stars===3?pr:late?c0.slow:pr,0);fx(late?'comfort':'pat',late?'수고했어':c0.praiseWord)},350);
   setTimeout(()=>{fanfare();const pts=(slots.length?slots:items);for(let i=0;i<9;i++)setTimeout(()=>{const s=pts[Math.floor(Math.random()*pts.length)];burst(s.x,s.y,30+Math.random()*40)},i*160);
-    const room=LV[L].room,last=LV[L].stage===2,bk=bkey(L),prev=starsOf(save.best[bk]);
-    save.best[bk]=Math.max(prev,stars);save.open[room]=Math.max(save.open[room]||0,Math.min(LV[L].stage+1,2));persist();showTro();
+    const room=LV[L].room,last=LV[L].stage===2,bk=bkey(L),prev=starsOf(save.best[bk]),ds0=decoStars();
+    save.best[bk]=Math.max(prev,stars);const gift=DECO.filter(d=>d[2]>ds0&&d[2]<=decoStars());save.open[room]=Math.max(save.open[room]||0,Math.min(LV[L].stage+1,2));persist();showTro();
     $('ovWho').innerHTML=PF_MOM;
     $('ovTro').innerHTML=`<div class="bigstars">${[0,1,2].map(i=>`<i class="${i<stars?'on':''}" style="animation-delay:${.25+i*.28}s">★</i>`).join('')}</div>
       <div class="conds"><span class="on">✓ 정리 완료</span><span class="${mist===0?'on':''}">${mist===0?'✓':'·'} 실수 없이</span><span class="${late?'':'on'}">${late?'·':'✓'} 엄마 오기 전에</span></div>`;
     [0,1,2].forEach(i=>{if(i<stars)setTimeout(()=>kal([659,784,988][i],.12),250+i*280)});
     $('ovT').textContent=stars===3?pr:late?CH[who].slow:pr;
-    $('ovP').textContent=`${TOTAL}개 · ${fmt(sec)} · 실수 ${mist}번${last?` · ${LV[L].name} 끝!`:''}${prev>stars?` · 최고 기록 별 ${prev}개`:''}`;
+    $('ovP').textContent=`${TOTAL}개 · ${fmt(sec)} · 실수 ${mist}번${last?` · ${LV[L].name} 끝!`:''}${prev>stars?` · 최고 기록 별 ${prev}개`:''}${gift.length?` · 🎁 새 소품: ${gift.map(d=>d[1]).join(', ')} (내 방에서 꾸며 봐요)`:''}`;
     $('ovB').textContent=last?'다른 방 고르기':'다음 단계';
     $('ov').classList.add('on')},2300);
 }
@@ -811,6 +840,104 @@ function frame(now){
   }
   requestAnimationFrame(frame);
 }
+
+/* ---------- 내 방 꾸미기: 별로 소품을 열고, 자유롭게 배치 ---------- */
+/* 별은 레벨마다 쉬운/어려운 모드 중 더 높은 기록만 셈 (모드를 바꿔도 소품은 그대로) */
+const RW=900,RH=640,FLOOR=400;
+const F={
+mattress:(w,h)=>`<rect x="4" y="${h*.35}" width="${w-8}" height="${h*.62}" rx="14" fill="#f4ede4"/><rect x="4" y="${h*.35}" width="${w-8}" height="${h*.2}" rx="10" fill="#fff"/><rect x="12" y="${h*.1}" width="${w*.26}" height="${h*.36}" rx="12" fill="#fff" stroke="#eadfd2" stroke-width="2"/>`,
+boxdesk:(w,h)=>`<rect x="6" y="${h*.12}" width="${w-12}" height="${h*.86}" rx="4" fill="#d9b48a"/><rect x="6" y="${h*.12}" width="${w-12}" height="${h*.14}" fill="#c99e70"/><rect x="${w*.42}" y="${h*.12}" width="${w*.16}" height="${h*.86}" fill="#e9cfa8" opacity=".8"/><rect x="${w*.15}" y="${h*.52}" width="${w*.18}" height="${h*.08}" fill="#a9825c"/>`,
+bulb:(w,h)=>`<rect x="${w/2-1}" y="0" width="2" height="${h*.55}" fill="#a08cad"/><rect x="${w/2-6}" y="${h*.5}" width="12" height="${h*.1}" rx="2" fill="#b8a9c4"/><circle cx="${w/2}" cy="${h*.76}" r="${w*.36}" fill="#fff3b8"/><circle cx="${w*.4}" cy="${h*.7}" r="${w*.1}" fill="#fff"/>`,
+rug:(w,h)=>`<ellipse cx="${w/2}" cy="${h/2}" rx="${w/2-2}" ry="${h/2-2}" fill="#f6c9d0"/><ellipse cx="${w/2}" cy="${h/2}" rx="${w*.36}" ry="${h*.32}" fill="#fbe0e4"/><ellipse cx="${w/2}" cy="${h/2}" rx="${w*.18}" ry="${h*.15}" fill="#f6c9d0"/>`,
+plant:(w,h)=>S.plant(w,h,'#8fd17a'),
+lamp:(w,h)=>`<polygon points="${w*.18},${h*.28} ${w*.82},${h*.28} ${w*.68},0 ${w*.32},0" fill="#ffe4a8"/><rect x="${w/2-3}" y="${h*.28}" width="6" height="${h*.64}" fill="#b49a86"/><ellipse cx="${w/2}" cy="${h*.95}" rx="${w*.38}" ry="${h*.05}" fill="#a3876f"/>`,
+wooddesk:(w,h)=>`<rect x="0" y="0" width="${w}" height="${h*.14}" rx="5" fill="#c98f5f"/><rect x="8" y="${h*.14}" width="12" height="${h*.86}" fill="#b57c4e"/><rect x="${w-20}" y="${h*.14}" width="12" height="${h*.86}" fill="#b57c4e"/><rect x="${w*.55}" y="${h*.14}" width="${w*.33}" height="${h*.36}" rx="3" fill="#d9a372"/><rect x="${w*.66}" y="${h*.28}" width="${w*.12}" height="5" rx="2" fill="#f4e1c8"/>`,
+chair:(w,h)=>`<rect x="${w*.15}" y="0" width="${w*.7}" height="${h*.48}" rx="14" fill="#a9d8c8"/><rect x="${w*.08}" y="${h*.46}" width="${w*.84}" height="${h*.14}" rx="7" fill="#8cc7b4"/><rect x="${w*.16}" y="${h*.6}" width="7" height="${h*.4}" fill="#9a8478"/><rect x="${w*.84-7}" y="${h*.6}" width="7" height="${h*.4}" fill="#9a8478"/>`,
+frame:(w,h)=>`<rect x="0" y="0" width="${w}" height="${h}" rx="5" fill="#e3c08f"/><rect x="7" y="7" width="${w-14}" height="${h-14}" fill="#dff0fb"/><circle cx="${w*.7}" cy="${h*.35}" r="${h*.11}" fill="#ffe08a"/><polygon points="7,${h-7} ${w*.38},${h*.42} ${w*.62},${h-7}" fill="#9fd49a"/><polygon points="${w*.4},${h-7} ${w*.66},${h*.52} ${w-7},${h-7}" fill="#7fc488"/>`,
+window:(w,h)=>`<rect x="0" y="0" width="${w}" height="${h}" rx="8" fill="#fff"/><rect x="10" y="10" width="${w-20}" height="${h-20}" rx="4" fill="#cdeafb"/><circle cx="${w*.72}" cy="${h*.3}" r="${h*.1}" fill="#fff6c9"/><ellipse cx="${w*.3}" cy="${h*.34}" rx="${w*.12}" ry="${h*.06}" fill="#fff"/><rect x="${w/2-4}" y="10" width="8" height="${h-20}" fill="#fff"/><rect x="10" y="${h/2-4}" width="${w-20}" height="8" fill="#fff"/><path d="M4 4h${w*.2}q-6 ${h*.5} 0 ${h-8}H4z" fill="#f7c6cf"/><path d="M${w-4} 4h-${w*.2}q6 ${h*.5} 0 ${h-8}H${w-4}z" fill="#f7c6cf"/>`,
+bed:(w,h)=>`<rect x="0" y="0" width="${w*.1}" height="${h}" rx="8" fill="#d9a9e0"/><rect x="${w*.06}" y="${h*.42}" width="${w*.92}" height="${h*.46}" rx="12" fill="#fff"/><rect x="${w*.36}" y="${h*.36}" width="${w*.62}" height="${h*.52}" rx="14" fill="#c9b6f0"/><rect x="${w*.36}" y="${h*.36}" width="${w*.62}" height="${h*.12}" rx="6" fill="#ddd0f7"/><rect x="${w*.12}" y="${h*.26}" width="${w*.2}" height="${h*.26}" rx="12" fill="#fff" stroke="#eee" stroke-width="2"/><rect x="${w*.06}" y="${h*.86}" width="10" height="${h*.14}" fill="#b98fc2"/><rect x="${w*.92}" y="${h*.86}" width="10" height="${h*.14}" fill="#b98fc2"/>`,
+shelf:(w,h)=>{let b='';const cs=['#f4a6b6','#a9d8c8','#ffd98a','#b8c6f2','#f5b98a','#c9b6f0'];for(let r=0;r<3;r++)for(let i=0;i<5;i++){if((r*5+i)%4===3)continue;const bw=w*.13,x=w*.1+i*bw*1.05,y0=h*(.06+r*.31);b+=`<rect x="${x}" y="${y0+h*.06+(i%2)*4}" width="${bw*.9}" height="${h*.22-(i%2)*4}" rx="2" fill="${cs[(r*2+i)%6]}"/>`}
+  return`<rect x="0" y="0" width="${w}" height="${h}" rx="6" fill="#d9a372"/><rect x="${w*.06}" y="${h*.04}" width="${w*.88}" height="${h*.92}" fill="#f3dcc0"/>${[1,2].map(r=>`<rect x="${w*.06}" y="${h*(.04+r*.31)}" width="${w*.88}" height="6" fill="#d9a372"/>`).join('')}${b}`},
+cushion:(w,h)=>`<ellipse cx="${w/2}" cy="${h*.6}" rx="${w/2-2}" ry="${h*.38}" fill="#ffd1a8"/><ellipse cx="${w/2}" cy="${h*.5}" rx="${w*.36}" ry="${h*.24}" fill="#ffe6cf"/><polygon points="${w*.14},${h*.4} ${w*.22},${h*.05} ${w*.34},${h*.32}" fill="#ffd1a8"/><polygon points="${w*.86},${h*.4} ${w*.78},${h*.05} ${w*.66},${h*.32}" fill="#ffd1a8"/>`,
+vanity:(w,h)=>`<ellipse cx="${w/2}" cy="${h*.24}" rx="${w*.3}" ry="${h*.22}" fill="#f2d7e3"/><ellipse cx="${w/2}" cy="${h*.24}" rx="${w*.24}" ry="${h*.17}" fill="#e6f4fb"/><path d="M${w*.36} ${h*.16}l${w*.1} -${h*.06}" stroke="#fff" stroke-width="4" stroke-linecap="round"/><rect x="0" y="${h*.5}" width="${w}" height="${h*.1}" rx="4" fill="#f7c6cf"/><rect x="${w*.06}" y="${h*.6}" width="${w*.88}" height="${h*.28}" fill="#fbe0e4"/><rect x="${w*.06}" y="${h*.88}" width="9" height="${h*.12}" fill="#e3a9b6"/><rect x="${w*.94-9}" y="${h*.88}" width="9" height="${h*.12}" fill="#e3a9b6"/><circle cx="${w/2}" cy="${h*.74}" r="4" fill="#e3a9b6"/><rect x="${w*.1}" y="${h*.38}" width="10" height="${h*.12}" rx="3" fill="#e2788f"/><rect x="${w*.1+13}" y="${h*.42}" width="12" height="${h*.08}" rx="4" fill="#c9b6f0"/><rect x="${w*.8}" y="${h*.36}" width="12" height="${h*.14}" rx="5" fill="#a9d8c8"/><rect x="${w*.8+2}" y="${h*.32}" width="8" height="${h*.05}" fill="#ffd98a"/>`,
+cattower:(w,h)=>`<rect x="${w*.44}" y="${h*.1}" width="${w*.12}" height="${h*.86}" fill="#e9d6b8"/>${[0,.3,.6].map((y,i)=>`<rect x="${w*.44}" y="${h*(y+.14)}" width="${w*.12}" height="${h*.12}" fill="#d6bf9a"/>`).join('')}<rect x="${w*.05}" y="${h*.08}" width="${w*.6}" height="${h*.06}" rx="6" fill="#c9b6f0"/><rect x="${w*.38}" y="${h*.42}" width="${w*.58}" height="${h*.06}" rx="6" fill="#a9d8c8"/><rect x="${w*.08}" y="${h*.68}" width="${w*.5}" height="${h*.2}" rx="10" fill="#f7c6cf"/><ellipse cx="${w*.33}" cy="${h*.78}" rx="${w*.12}" ry="${h*.05}" fill="#b98fc2"/><rect x="0" y="${h*.94}" width="${w}" height="${h*.06}" rx="5" fill="#c9b6f0"/><circle cx="${w*.86}" cy="${h*.56}" r="${w*.06}" fill="#ffd98a"/><rect x="${w*.86-1}" y="${h*.48}" width="2" height="${h*.06}" fill="#a08cad"/>`,
+motiondesk:(w,h)=>`<rect x="${w*.32}" y="0" width="${w*.36}" height="${h*.3}" rx="6" fill="#6f6684"/><rect x="${w*.34}" y="${h*.025}" width="${w*.32}" height="${h*.25}" rx="4" fill="#b8e3f2"/><path d="M${w*.38} ${h*.2}l${w*.08} -${h*.1}l${w*.06} ${h*.06}l${w*.1} -${h*.12}" stroke="#fff" stroke-width="3" fill="none"/><rect x="${w/2-4}" y="${h*.3}" width="8" height="${h*.08}" fill="#8a829e"/><rect x="${w*.28}" y="${h*.36}" width="${w*.24}" height="${h*.03}" rx="2" fill="#e6e1ee"/><rect x="0" y="${h*.39}" width="${w}" height="${h*.08}" rx="5" fill="#fafafa" stroke="#e6e1ee" stroke-width="2"/><rect x="${w*.14}" y="${h*.47}" width="10" height="${h*.48}" fill="#b8b2c6"/><rect x="${w*.86-10}" y="${h*.47}" width="10" height="${h*.48}" fill="#b8b2c6"/><rect x="${w*.04}" y="${h*.95}" width="${w*.26}" height="${h*.05}" rx="3" fill="#8a829e"/><rect x="${w*.7}" y="${h*.95}" width="${w*.26}" height="${h*.05}" rx="3" fill="#8a829e"/><rect x="${w*.75}" y="${h*.29}" width="${w*.1}" height="${h*.1}" rx="3" fill="#f7c6cf"/>`,
+neon:(w,h)=>`<path d="M${w/2} 4l${w*.12} ${h*.26}l${w*.28} ${h*.03}l-${w*.21} ${h*.19}l${w*.07} ${h*.28}l-${w*.26} -${h*.15}l-${w*.26} ${h*.15}l${w*.07} -${h*.28}l-${w*.21} -${h*.19}l${w*.28} -${h*.03}z" fill="#fff3b8" stroke="#ffd36b" stroke-width="4" stroke-linejoin="round"/>`,
+trophy:(w,h)=>`<path d="M${w*.2} ${h*.1}H${w*.04}a${w*.15} ${w*.15} 0 0 0 ${w*.2} ${h*.26}M${w*.8} ${h*.1}H${w*.96}a${w*.15} ${w*.15} 0 0 1 -${w*.2} ${h*.26}" fill="none" stroke="#e6a92a" stroke-width="4"/><path d="M${w*.2} ${h*.04}h${w*.6}v${h*.24}a${w*.3} ${w*.3} 0 0 1 -${w*.6} 0z" fill="#ffd36b"/><rect x="${w*.44}" y="${h*.54}" width="${w*.12}" height="${h*.18}" fill="#e6a92a"/><rect x="${w*.26}" y="${h*.72}" width="${w*.48}" height="${h*.1}" rx="2" fill="#ffd36b"/><rect x="${w*.18}" y="${h*.82}" width="${w*.64}" height="${h*.16}" rx="3" fill="#b98a5e"/><path d="M${w/2} ${h*.1}l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6-4.5-4 6-1z" fill="#fff" opacity=".8"/>`,
+};
+/* [id, 이름, 필요한 별, 너비, 높이, 기본 x, 기본 y(중심)] — 처음엔 텅 빈 첫 자취방 */
+const DECO=[
+ ['mattress','얇은 매트리스',0,220,70,250,520],['boxdesk','박스 책상',0,120,80,640,480],['bulb','알전구',0,46,96,450,48],
+ ['rug','동그란 러그',3,280,70,450,560],['plant','작은 화분',6,64,90,800,470],['lamp','스탠드',9,56,140,760,400],
+ ['floor','마루 바닥',11],['wooddesk','원목 책상',14,180,104,640,470],['chair','민트 의자',17,76,116,560,500],
+ ['frame','풍경 액자',20,100,76,250,180],['wall','꽃무늬 벽지',23],['window','큰 창문',26,220,160,560,170],
+ ['bed','포근한 침대',29,260,130,240,500],['shelf','책장',32,120,190,110,360],['cushion','고양이 쿠션',35,96,50,420,580],
+ ['vanity','화장대',38,140,160,820,410],['cattower','캣타워',42,120,230,110,410],['motiondesk','모션데스크',46,200,170,640,440],
+ ['neon','별 무드등',49,80,80,820,90],['trophy','황금 트로피',52,64,76,640,350],
+];
+const DK=Object.fromEntries(DECO.map(d=>[d[0],d]));
+const decoStars=()=>{const m={};for(const[k,v]of Object.entries(save.best)){const b=k.replace(/-(easy|hard)$/,'');m[b]=Math.max(m[b]||0,starsOf(v))}return Object.values(m).reduce((a,b)=>a+b,0)};
+const unlocked=n=>DECO.filter(d=>d[2]<=n);
+const deco=()=>save.deco||(save.deco={placed:[],seen:0});
+const fsvg=(id,w,h)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">${F[id](w,h)}</svg>`;
+let mrSel=null,mrK=1;
+function roomBg(n){
+  const wood=n>=DK.floor[2],paper=n>=DK.wall[2];
+  return`<svg viewBox="0 0 ${RW} ${RH}" width="${RW}" height="${RH}" style="position:absolute;inset:0"><defs>
+   <pattern id="wp" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#fdf0f3"/><circle cx="15" cy="15" r="5" fill="#f7c6cf"/><circle cx="45" cy="45" r="5" fill="#d9cdf5"/><circle cx="15" cy="15" r="2" fill="#fff"/><circle cx="45" cy="45" r="2" fill="#fff"/></pattern>
+   <pattern id="wd" width="120" height="40" patternUnits="userSpaceOnUse"><rect width="120" height="40" fill="#e9c9a3"/><rect y="19" width="120" height="2" fill="#d9b48a"/><rect x="60" width="2" height="20" fill="#d9b48a"/><rect x="20" y="20" width="2" height="20" fill="#d9b48a"/></pattern></defs>
+   <rect width="${RW}" height="${FLOOR}" fill="${paper?'url(#wp)':'#f3eee9'}"/><rect y="${FLOOR}" width="${RW}" height="${RH-FLOOR}" fill="${wood?'url(#wd)':'#dcd5cf'}"/>
+   <rect y="${FLOOR-10}" width="${RW}" height="12" fill="${paper?'#f7c6cf':'#e6ded6'}"/>${n<3?`<path d="M90 120l30 50M720 260l-20 40" stroke="#e2d9d0" stroke-width="2"/>`:''}</svg>`}
+function renderRoom(){
+  const n=decoStars(),D=deco(),st=$('mrStage');
+  D.placed=D.placed.filter(p=>DK[p.id]&&DK[p.id][2]<=n);
+  st.innerHTML=roomBg(n)+D.placed.map((p,i)=>{const d=DK[p.id];return`<div class="mri${mrSel===p.id?' sel':''}" data-id="${p.id}" style="left:${p.x-d[3]/2}px;top:${p.y-d[4]/2}px;width:${d[3]}px;height:${d[4]}px;z-index:${i+1};transform:scaleX(${p.f?-1:1})">${fsvg(p.id,d[3],d[4])}</div>`}).join('');
+  const nx=DECO.find(d=>d[2]>n);
+  $('mrInfo').innerHTML=`<i class="on">★</i> ${n}${nx?` · 다음 소품까지 ★${nx[2]-n}`:' · 전부 모았어요!'}`;
+  $('mrShelf').innerHTML=DECO.map(d=>{const op=d[2]<=n,on=D.placed.some(p=>p.id===d[0]),up=!d[3];
+    const th=up?(d[0]==='floor'?'<svg viewBox="0 0 60 60"><rect width="60" height="60" rx="10" fill="#e9c9a3"/><rect y="29" width="60" height="2" fill="#d9b48a"/><rect x="30" width="2" height="30" fill="#d9b48a"/></svg>':'<svg viewBox="0 0 60 60"><rect width="60" height="60" rx="10" fill="#fdf0f3"/><circle cx="18" cy="18" r="7" fill="#f7c6cf"/><circle cx="42" cy="42" r="7" fill="#d9cdf5"/></svg>'):fsvg(d[0],d[3],d[4]);
+    return`<button class="mrc${op?'':' lock'}${on||(up&&op)?' on':''}" data-id="${d[0]}" ${op?'':'disabled'}><span class="th">${th}</span><span class="nm">${d[1]}</span><span class="cs">${op?(up?'적용됨':on?'놓았어요':'놓기'):`★${d[2]}`}</span></button>`}).join('');
+  $('mrTools').classList.toggle('on',!!mrSel);
+  fitRoom()}
+function fitRoom(){const v=$('mrView');if(!v)return;const k=Math.min(v.clientWidth/RW,v.clientHeight/RH)||1;mrK=k;
+  Object.assign($('mrStage').style,{transform:`translate(${(v.clientWidth-RW*k)/2}px,${(v.clientHeight-RH*k)/2}px) scale(${k})`})}
+new ResizeObserver(fitRoom).observe($('mrView'));
+function mrSay(t){$('mrBub').textContent=t;$('mrMom').classList.add('on');clearTimeout(mrSay.t);mrSay.t=setTimeout(()=>$('mrMom').classList.remove('on'),3200)}
+const MR_LINES=['방이 점점 예뻐지네~','우리 {n} 방 너무 포근하다','여기 앉아서 쉬어도 되겠다~','센스 있게 잘 놓았네!'];
+function openRoom(){
+  const n=decoStars(),D=deco(),nw=unlocked(n).filter(d=>d[2]>D.seen&&d[2]>0);
+  mrSel=null;$('myroom').classList.add('on');$('mrMomPf').innerHTML=PF_MOM;renderRoom();
+  const nm=who==='kid'?'우리 아기':who==='cat'?'냥이':'멍이';
+  setTimeout(()=>mrSay(nw.length?`새 소품 생겼네! ${nw.slice(-2).map(d=>d[1]).join(', ')}${nw.length>2?` 외 ${nw.length-2}개`:''}`:D.placed.length?MR_LINES[Math.floor(Math.random()*MR_LINES.length)].replace('{n}',nm):'아직 텅 비었지? 아래에서 하나씩 놓아 봐~'),300);
+  if(nw.length)[523,659,784].forEach((f,i)=>kal(f,.12,i*.12));
+  D.seen=Math.max(D.seen,n);persist();updRoomBtn()}
+function updRoomBtn(){const n=decoStars(),D=deco(),nw=DECO.some(d=>d[2]>0&&d[2]<=n&&d[2]>D.seen);
+  $('roomB').innerHTML=`🏠 내 방 꾸미기 <small>★${n}</small>${nw?'<span class="tag">NEW</span>':''}`}
+$('roomB').addEventListener('click',()=>{openRoom()});
+$('mrClose').addEventListener('click',()=>{$('myroom').classList.remove('on');updRoomBtn()});
+$('mrShelf').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const d=DK[b.dataset.id];if(!d[3])return;
+  const D=deco(),ex=D.placed.find(p=>p.id===d[0]);
+  if(ex){mrSel=d[0];renderRoom();return}
+  D.placed.push({id:d[0],x:d[5],y:d[6],f:0});mrSel=d[0];persist();renderRoom();popS(2);
+  const el=$('mrStage').querySelector(`[data-id="${d[0]}"]`);if(el){el.classList.add('pop')}});
+$('mrTools').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!mrSel)return;const D=deco(),i=D.placed.findIndex(p=>p.id===mrSel);if(i<0)return;
+  if(b.dataset.a==='flip')D.placed[i].f=D.placed[i].f?0:1;
+  if(b.dataset.a==='front')D.placed.push(D.placed.splice(i,1)[0]);
+  if(b.dataset.a==='back')D.placed.unshift(D.placed.splice(i,1)[0]);
+  if(b.dataset.a==='del'){D.placed.splice(i,1);mrSel=null;thud()}else kal(784,.08);
+  persist();renderRoom()});
+/* 드래그: 화면 좌표 → 방 좌표(스케일 보정) */
+$('mrStage').addEventListener('pointerdown',e=>{
+  const el=e.target.closest('.mri');if(!el){if(mrSel){mrSel=null;renderRoom()}return}
+  e.preventDefault();const id=el.dataset.id,D=deco(),p=D.placed.find(q=>q.id===id),d=DK[id],sx=e.clientX,sy=e.clientY,px=p.x,py=p.y;
+  if(mrSel!==id){mrSel=id;$('mrStage').querySelectorAll('.mri').forEach(x=>x.classList.toggle('sel',x===el));$('mrTools').classList.add('on')}
+  el.classList.add('drag');lift&&lift();el.setPointerCapture(e.pointerId);
+  const mv=ev=>{p.x=Math.max(d[3]/2,Math.min(RW-d[3]/2,px+(ev.clientX-sx)/mrK));p.y=Math.max(d[4]/2,Math.min(RH-d[4]/2,py+(ev.clientY-sy)/mrK));
+    el.style.left=(p.x-d[3]/2)+'px';el.style.top=(p.y-d[4]/2)+'px'};
+  const up=()=>{el.removeEventListener('pointermove',mv);el.classList.remove('drag');persist();if(Math.hypot(p.x-px,p.y-py)>4)popS(1)};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up,{once:true});el.addEventListener('pointercancel',up,{once:true})});
+updRoomBtn();
+
 load(Math.max(0,idxOf(who==='kid'?'fridge':who+'room',0)));openHome();requestAnimationFrame(frame);
 }
 </script>
